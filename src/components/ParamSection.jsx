@@ -16,6 +16,7 @@ const ParamSection = () => {
 
   return (
     <div className="p-2 m-20 border-2 border-green-200 rounded-md shadow-md mt-5">
+        <h2 className="text-lg font-semibold text-green-300">Socket Connection</h2>
       <div className="grid grid-cols-4 gap-2">
         <div>
           <label className="text-xs">Socket IP</label>
