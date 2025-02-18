@@ -1,11 +1,22 @@
-import React from 'react';
+import React, { createContext, useState } from 'react';
 
-const SocketContext = () => {
+export const SocketContext = createContext();
+
+export const SocketProvider = ({ children }) => {
+  const [socketParams, setSocketParams] = useState({
+    socketIP: '',
+    port: '',
+    ackDelay: '',
+    requestMessage: ''
+  });
+
+  console.log(socketParams.requestMessage);
+
   return (
-    <div>
-      
-    </div>
+    <SocketContext.Provider value={{ socketParams, setSocketParams }}>
+      {children}
+    </SocketContext.Provider>
   );
 };
 
-export default SocketContext;
+export default SocketProvider;

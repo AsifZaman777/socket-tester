@@ -1,13 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { VscDebugDisconnect } from "react-icons/vsc";
 import { GiNetworkBars } from "react-icons/gi";
+import { SocketContext } from "../context/SocketContext";
 
 const ParamSection = () => {
   const [socketIP, setSocketIP] = useState("");
   const [port, setPort] = useState("");
   const [threads, setThreads] = useState("");
   const [ackDelay, setAckDelay] = useState("");
+  const [requestMessage, setRequestMessage] = useState("");
   const [isConnected, setIsConnected] = useState(false);
+  const { setSocketParams } = useContext(SocketContext);
+
+  const handleDone = () => {
+    if (socketIP && port) {
+      setSocketParams({ socketIP, port, ackDelay, requestMessage });
+      setIsConnected(true);
+    } else {
+      alert("Please enter valid Socket IP and Port");
+    }
+  };
 
   return (
     <div className="p-2 m-20 border-2 border-green-200 rounded-md shadow-md mt-5">
@@ -45,7 +57,7 @@ const ParamSection = () => {
             placeholder="e.g 1000"
           />
         </div>
-        <div>
+        {/* <div>
           <label className="text-xs">No of Threads (Users)</label>
           <input
             type="text"
@@ -54,20 +66,23 @@ const ParamSection = () => {
             className="border p-2 rounded w-full hover:border-green-200 transition-all duration-150 text-green-300 text-xs focus-visible:outline-none"
             placeholder="e.g 10"
           />
-        </div>
+        </div> */}
         <div>
           <label className="text-xs">Request connection message</label>
           <input
             type="text"
-            value={threads}
-            onChange={(e) => setThreads(e.target.value)}
+            value={requestMessage}
+            onChange={(e) => setRequestMessage(e.target.value)}
             className="border p-2  rounded w-full hover:border-green-200 transition-all duration-150 text-green-300 text-xs focus-visible:outline-none"
             placeholder={`{"data":{"16":"mt010","37":4325},"mt":"LG"}`}
           />
         </div>
       </div>
       <div className="mt-5">
-        <button className="bg-blue-500 text-white p-2 rounded mr-1 hover:bg-blue-600 transition-all duration-200 text-xs">
+        <button
+          className="bg-blue-500 text-white p-2 rounded mr-1 hover:bg-blue-600 transition-all duration-200 text-xs"
+          onClick={handleDone}
+        >
           Done
         </button>
       </div>
