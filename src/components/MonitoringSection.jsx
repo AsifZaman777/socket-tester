@@ -36,7 +36,7 @@ const MonitoringSection = () => {
   const [messageCount, setMessageCount] = useState(0);
   const [sendMessageCount, setSendMessageCount] = useState(0);
   const [wsConnected, setWsConnected] = useState(false);
-
+ 
   useEffect(() => {
     // Use the dynamic socket IP and port from context
     if (socketParams.socketIP !== "" && socketParams.port !== "") {
@@ -214,7 +214,7 @@ const MonitoringSection = () => {
             <div className="flex items-center gap-2">
               <FaUser className="text-white" />
               <h4 className="text-sm font-semibold text-white">
-                Users: {wsConnected ? "1" : "0"}
+                Users: {socketParams.threads}
               </h4>
             </div>
           </div>

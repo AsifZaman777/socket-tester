@@ -7,7 +7,8 @@ export const SocketProvider = ({ children }) => {
     socketIP: '',
     port: '',
     ackDelay: '',
-    requestMessage: ''
+    requestMessage: '',
+    threds:null,
   });
 
   console.log(socketParams.requestMessage);

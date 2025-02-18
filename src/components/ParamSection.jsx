@@ -15,7 +15,7 @@ const ParamSection = () => {
 
   const handleDone = () => {
     if (socketIP && port) {
-      setSocketParams({ socketIP, port, ackDelay, requestMessage });
+      setSocketParams({ socketIP, port, ackDelay, requestMessage, threads });
       setIsConnected(true);
     } else {
       Swal.fire({
