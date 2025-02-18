@@ -33,6 +33,7 @@ const MonitoringSection = () => {
   const [ws, setWs] = useState(null);
   const [messageCount, setMessageCount] = useState(0);
   const [sendMessageCount, setSendMessageCount] = useState(0);
+  const [wsConnected, setWsConnected] = useState(false);
 
   useEffect(() => {
     // Use the dynamic socket IP and port from context
@@ -43,6 +44,7 @@ const MonitoringSection = () => {
       socket.onopen = () => {
         console.log("WebSocket connected");
         updateLogs("Connection established");
+        setWsConnected(true);
       };
 
       socket.onmessage = (e) => {
@@ -71,6 +73,7 @@ const MonitoringSection = () => {
   }, [socketParams.socketIP, socketParams.port]); // Depend on socketParams to update if IP/Port changes
 
   useEffect(() => {
+    if(wsConnected) {
     const interval = setInterval(() => {
       const currentTime = new Date().toLocaleTimeString();
 
@@ -93,9 +96,18 @@ const MonitoringSection = () => {
       setMessageCount(0);
       setSendMessageCount(0);
     }, 1000);
+    
 
     return () => clearInterval(interval);
+  }
   }, [messageCount, sendMessageCount]);
+
+  useEffect(() => {
+    const logContainer = document.getElementById("log-container");
+    if (logContainer) {
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+  }, [logs]);
 
   const updateLogs = (data) => {
     const currentTime = new Date().toLocaleTimeString();
@@ -181,7 +193,10 @@ const MonitoringSection = () => {
           <h4 className="text-sm font-semibold text-green-300 mb-2">
             Live Logs
           </h4>
-          <div className="max-h-96 overflow-y-auto border border-gray-200 p-2 rounded-md bg-gray-900 text-green-300 text-xs">
+          <div
+            id="log-container"
+            className="max-h-96 overflow-y-auto border border-gray-200 p-2 rounded-md bg-gray-900 text-green-300 text-xs"
+          >
             {logs.map((log, index) => (
               <div key={index}>
                 <span className="font-bold text-blue-400">{log.time}:</span>{" "}
