@@ -1,7 +1,8 @@
 import React, { useState, useContext } from "react";
-import { VscDebugDisconnect } from "react-icons/vsc";
+import { FaWifi } from "react-icons/fa";
 import { GiNetworkBars } from "react-icons/gi";
 import { SocketContext } from "../context/SocketContext";
+import Swal from "sweetalert2";
 
 const ParamSection = () => {
   const [socketIP, setSocketIP] = useState("");
@@ -17,7 +18,13 @@ const ParamSection = () => {
       setSocketParams({ socketIP, port, ackDelay, requestMessage });
       setIsConnected(true);
     } else {
-      alert("Please enter valid Socket IP and Port");
+      Swal.fire({
+        background: "#1a202c",
+        color: "#f7fafc",
+        icon: "error",
+        title: "Missing or invalid credentials",
+        text: "Please fill in the required fields",
+      });
     }
   };
 
@@ -91,12 +98,12 @@ const ParamSection = () => {
         {isConnected ? (
           <div className="flex items-center text-green-300 text-sm mt-2">
             <GiNetworkBars className="mr-1" />
-            Connected to the socket
+            Ready to connect
           </div>
         ) : (
-          <div className="flex items-center text-red-300 text-sm mt-2">
-            <VscDebugDisconnect className="mr-1" />
-            Not connected to the socket
+          <div className="flex items-center text-red-300 text-sm mt-2 animate-pulse font-bold">
+            <FaWifi className="mr-1" />
+            Insert socket credentials
           </div>
         )}
       </div>

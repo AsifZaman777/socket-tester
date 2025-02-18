@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import Swal from "sweetalert2";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -32,6 +33,7 @@ const MonitoringSection = () => {
   const [ws, setWs] = useState(null);
   const [messageCount, setMessageCount] = useState(0);
   const [sendMessageCount, setSendMessageCount] = useState(0);
+
   useEffect(() => {
     // Use the dynamic socket IP and port from context
     if (socketParams.socketIP !== "" && socketParams.port !== "") {
@@ -101,16 +103,20 @@ const MonitoringSection = () => {
   };
 
   const sendSession = () => {
-    if(socketParams.socketIP !== "" || socketParams.port !== "") {
-    console.log("mt:LG");
-    const message =
-      '{"data":{"16":"mt010","37":4325,"271":"505ae561111b6bfd3fad9f3badb0d8ca200eefaf1dfbb2310f58d6c710acbbba","64":196608,"65":3},"mt":"LG"}';
-    ws.send(message);
-    setSendMessageCount((prev) => prev + 1);
-    setInterval(sendAck, 5000);
-    }
-    else{
-      alert("Please enter valid Socket IP and Port");
+    if (socketParams.socketIP !== "" && socketParams.port !== "" && socketParams.requestMessage !== "") {
+      console.log("mt:LG");
+      const message = socketParams.requestMessage;
+      ws.send(message);
+      setSendMessageCount((prev) => prev + 1);
+      setInterval(sendAck, 5000);
+    } else {
+      Swal.fire({
+        background: "#1a202c",
+        color: "#f7fafc",
+        icon: "error",
+        title: "Invalid Input",
+        text: "Please enter a valid Socket IP, Port, or Request Message!",
+      });
     }
   };
 
