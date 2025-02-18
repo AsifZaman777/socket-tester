@@ -64,16 +64,7 @@ const ParamSection = () => {
             placeholder="e.g 1000"
           />
         </div>
-        {/* <div>
-          <label className="text-xs">No of Threads (Users)</label>
-          <input
-            type="text"
-            value={threads}
-            onChange={(e) => setThreads(e.target.value)}
-            className="border p-2 rounded w-full hover:border-green-200 transition-all duration-150 text-green-300 text-xs focus-visible:outline-none"
-            placeholder="e.g 10"
-          />
-        </div> */}
+      
         <div>
           <label className="text-xs">Request connection message</label>
           <input
@@ -82,6 +73,16 @@ const ParamSection = () => {
             onChange={(e) => setRequestMessage(e.target.value)}
             className="border p-2  rounded w-full hover:border-green-200 transition-all duration-150 text-green-300 text-xs focus-visible:outline-none"
             placeholder={`{"data":{"16":"mt010","37":4325},"mt":"LG"}`}
+          />
+        </div>
+          <div>
+          <label className="text-xs">No of Threads (Users)</label>
+          <input
+            type="text"
+            value={threads}
+            onChange={(e) => setThreads(e.target.value)}
+            className="border p-2 rounded w-full hover:border-green-200 transition-all duration-150 text-green-300 text-xs focus-visible:outline-none"
+            placeholder="e.g 10"
           />
         </div>
       </div>

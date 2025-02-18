@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import Swal from "sweetalert2";
 import { Line } from "react-chartjs-2";
+import { FaWifi, FaUser } from "react-icons/fa";
+import { VscDebugDisconnect } from "react-icons/vsc";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -73,7 +75,8 @@ const MonitoringSection = () => {
   }, [socketParams.socketIP, socketParams.port]); // Depend on socketParams to update if IP/Port changes
 
   useEffect(() => {
-    if(wsConnected) {
+    if (!wsConnected) return;
+
     const interval = setInterval(() => {
       const currentTime = new Date().toLocaleTimeString();
 
@@ -96,11 +99,9 @@ const MonitoringSection = () => {
       setMessageCount(0);
       setSendMessageCount(0);
     }, 1000);
-    
 
     return () => clearInterval(interval);
-  }
-  }, [messageCount, sendMessageCount]);
+  }, [wsConnected, messageCount, sendMessageCount]);
 
   useEffect(() => {
     const logContainer = document.getElementById("log-container");
@@ -115,12 +116,16 @@ const MonitoringSection = () => {
   };
 
   const sendSession = () => {
-    if (socketParams.socketIP !== "" && socketParams.port !== "" && socketParams.requestMessage !== "") {
+    if (
+      socketParams.socketIP !== "" &&
+      socketParams.port !== "" &&
+      socketParams.requestMessage !== ""
+    ) {
       console.log("mt:LG");
       const message = socketParams.requestMessage;
       ws.send(message);
       setSendMessageCount((prev) => prev + 1);
-      setInterval(sendAck, 5000);
+      setInterval(sendAck, socketParams.ackDelay);
     } else {
       Swal.fire({
         background: "#1a202c",
@@ -182,9 +187,38 @@ const MonitoringSection = () => {
         Socket Monitoring
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Monitoring Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         {/* Graph Section */}
-        <div className="p-4 border border-green-200 rounded-md shadow-md">
+        <div className="p-0 border border-green-200 rounded-md shadow-md">
+          <div
+            className={`flex items-center gap-10 px-4 py-2 rounded-none shadow-md ${
+              wsConnected ? "bg-green-700" : "bg-red-500"
+            }`}
+          >
+            {/* Status icons */}
+            <div className="flex items-center gap-2">
+              {wsConnected ? (
+                <FaWifi className="text-white" />
+              ) : (
+                <VscDebugDisconnect className="animate-pulse" color="white" />
+              )}
+              {/* Status Text */}
+              <h4 className="text-sm font-semibold text-white">
+                Status: {wsConnected ? "Connected" : "Disconnected"}
+              </h4>
+            </div>
+
+            {/* User connected */}
+
+            <div className="flex items-center gap-2">
+              <FaUser className="text-white" />
+              <h4 className="text-sm font-semibold text-white">
+                Users: {wsConnected ? "1" : "0"}
+              </h4>
+            </div>
+          </div>
+
           <Line data={chartData} options={chartOptions} />
         </div>
 
