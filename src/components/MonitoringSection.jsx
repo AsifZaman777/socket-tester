@@ -13,7 +13,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { SocketContext } from "../context/SocketContext"; // Import SocketContext
+import { SocketContext } from "../context/SocketContext";
 
 // Register Chart.js components
 ChartJS.register(
@@ -27,52 +27,63 @@ ChartJS.register(
 );
 
 const MonitoringSection = () => {
-  const { socketParams } = useContext(SocketContext); // Consume SocketContext
+  const { socketParams } = useContext(SocketContext);
   const [logCounts, setLogCounts] = useState([]);
   const [sendLogCounts, setSendLogCounts] = useState([]);
   const [labels, setLabels] = useState([]);
   const [logs, setLogs] = useState([]);
-  const [ws, setWs] = useState(null);
+  const [wsConnected, setWsConnected] = useState(false);
+  const [workers, setWorkers] = useState([]);
   const [messageCount, setMessageCount] = useState(0);
   const [sendMessageCount, setSendMessageCount] = useState(0);
-  const [wsConnected, setWsConnected] = useState(false);
- 
+
   useEffect(() => {
-    // Use the dynamic socket IP and port from context
     if (socketParams.socketIP !== "" && socketParams.port !== "") {
-      const socketUrl = `ws://${socketParams.socketIP}:${socketParams.port}`;
-      const socket = new WebSocket(socketUrl);
+      const numThreads = parseInt(socketParams.threads, 10);
+      const newWorkers = [];
 
-      socket.onopen = () => {
-        console.log("WebSocket connected");
-        updateLogs("Connection established");
-        setWsConnected(true);
-      };
+      for (let i = 0; i < numThreads; i++) {
+        const worker = new Worker(new URL('../workers/socketWorker.js', import.meta.url), {
+          type: 'module',
+        });
 
-      socket.onmessage = (e) => {
-        console.log("Message received:", e.data);
-        setMessageCount((prev) => prev + 1);
-        updateLogs(e.data);
-      };
+        worker.postMessage({
+          socketIP: socketParams.socketIP,
+          port: socketParams.port,
+          requestMessage: socketParams.requestMessage,
+          ackDelay: socketParams.ackDelay,
+          threadId: i + 1,
+        });
 
-      socket.onclose = () => {
-        console.log("WebSocket disconnected");
-        updateLogs("Connection closed");
-      };
+        worker.onmessage = (event) => {
+          if (event.data.type === 'message') {
+            console.log(`Main thread: Message from worker ${i + 1}:`, event.data.message);
+            updateLogs(`Worker ${i + 1}: ${event.data.message}`);
+            setMessageCount(prev => prev + 1);
+          } else if (event.data.type === 'ack') {
+            console.log(`Main thread: ACK from worker ${i + 1}:`, event.data.message);
+            updateLogs(`Worker ${i + 1}: Sent ACK`);
+            setSendMessageCount(prev => prev + 1);
+          }
+        };
 
-      socket.onerror = (err) => {
-        console.error("WebSocket error:", err);
-      };
+        worker.onerror = (err) => {
+          console.error(`Main thread: Error from worker ${i + 1}:`, err);
+        };
 
-      setWs(socket);
+        newWorkers.push(worker);
+      }
+
+      setWorkers(newWorkers);
+      setWsConnected(true);
 
       return () => {
-        socket.close();
+        newWorkers.forEach(worker => worker.terminate());
       };
     } else {
       updateLogs("Please enter valid Socket IP and Port");
     }
-  }, [socketParams.socketIP, socketParams.port]); // Depend on socketParams to update if IP/Port changes
+  }, [socketParams.socketIP, socketParams.port, socketParams.threads]);
 
   useEffect(() => {
     if (!wsConnected) return;
@@ -123,9 +134,7 @@ const MonitoringSection = () => {
     ) {
       console.log("mt:LG");
       const message = socketParams.requestMessage;
-      ws.send(message);
-      setSendMessageCount((prev) => prev + 1);
-      setInterval(sendAck, socketParams.ackDelay);
+      workers.forEach(worker => worker.postMessage({ type: 'send', message }));
     } else {
       Swal.fire({
         background: "#1a202c",
@@ -134,15 +143,6 @@ const MonitoringSection = () => {
         title: "Invalid Input",
         text: "Please enter a valid Socket IP, Port, or Request Message!",
       });
-    }
-  };
-
-  const sendAck = () => {
-    if (ws) {
-      const ackMessage = '{"mt":"AC","data":{}}';
-      ws.send(ackMessage);
-      setSendMessageCount((prev) => prev + 1);
-      updateLogs("Sent: " + ackMessage);
     }
   };
 
