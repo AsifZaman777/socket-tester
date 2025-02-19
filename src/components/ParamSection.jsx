@@ -10,12 +10,13 @@ const ParamSection = () => {
   const [threads, setThreads] = useState("");
   const [ackDelay, setAckDelay] = useState("");
   const [requestMessage, setRequestMessage] = useState("");
+  const [ackMessage, setAckMessage] = useState(""); // Add ackMessage state
   const [isConnected, setIsConnected] = useState(false);
   const { setSocketParams } = useContext(SocketContext);
 
   const handleDone = () => {
     if (socketIP && port) {
-      setSocketParams({ socketIP, port, ackDelay, requestMessage, threads });
+      setSocketParams({ socketIP, port, ackDelay, requestMessage, ackMessage, threads });
       setIsConnected(true);
     } else {
       Swal.fire({
@@ -64,6 +65,8 @@ const ParamSection = () => {
             placeholder="e.g 1000"
           />
         </div>
+
+        
       
         <div>
           <label className="text-xs">Request connection message</label>
@@ -75,6 +78,18 @@ const ParamSection = () => {
             placeholder={`{"data":{"16":"mt010","37":4325},"mt":"LG"}`}
           />
         </div>
+
+        <div>
+          <label className="text-xs">Ack message</label>
+          <input
+            type="text"
+            value={ackMessage}
+            onChange={(e) => setAckMessage(e.target.value)}
+            className="border p-2  rounded w-full hover:border-green-200 transition-all duration-150 text-green-300 text-xs focus-visible:outline-none"
+            placeholder={`{"mt":"AC","data":{}}`}
+          />
+        </div>
+
           <div>
           <label className="text-xs">No of Threads (Users)</label>
           <input

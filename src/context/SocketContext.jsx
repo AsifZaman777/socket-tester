@@ -8,7 +8,8 @@ export const SocketProvider = ({ children }) => {
     port: '',
     ackDelay: '',
     requestMessage: '',
-    threds:null,
+    ackMessage: '', // Add ackMessage
+    threads: null,
   });
 
   console.log(socketParams.requestMessage);

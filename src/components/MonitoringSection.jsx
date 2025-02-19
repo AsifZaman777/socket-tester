@@ -52,6 +52,7 @@ const MonitoringSection = () => {
           port: socketParams.port,
           requestMessage: socketParams.requestMessage,
           ackDelay: socketParams.ackDelay,
+          ackMessage: socketParams.ackMessage, // Pass ackMessage to worker
           threadId: i + 1,
         });
 

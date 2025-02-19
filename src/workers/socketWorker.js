@@ -1,5 +1,5 @@
 self.onmessage = function (e) {
-  const { socketIP, port, requestMessage, ackDelay, threadId } = e.data;
+  const { socketIP, port, requestMessage, ackDelay, ackMessage, threadId } = e.data;
   const socketUrl = `ws://${socketIP}:${port}`;
   const socket = new WebSocket(socketUrl);
 
@@ -7,7 +7,6 @@ self.onmessage = function (e) {
     console.log(`Worker ${threadId}: WebSocket connected`);
     socket.send(requestMessage);
     setInterval(() => {
-      const ackMessage = '{"mt":"AC","data":{}}';
       socket.send(ackMessage);
       self.postMessage({ type: 'ack', message: ackMessage });
     }, ackDelay);
