@@ -27,7 +27,6 @@ self.onmessage = function (e) {
 };
 
 
-
 {
   /**
    process of socket handling

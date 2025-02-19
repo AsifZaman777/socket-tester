@@ -3,6 +3,7 @@ import Swal from "sweetalert2";
 import { Line } from "react-chartjs-2";
 import { FaWifi, FaUser } from "react-icons/fa";
 import { VscDebugDisconnect } from "react-icons/vsc";
+import { AiOutlineLoading3Quarters } from "react-icons/ai"; // Import loading icon
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -36,6 +37,7 @@ const MonitoringSection = () => {
   const [workers, setWorkers] = useState([]);
   const [messageCount, setMessageCount] = useState(0);
   const [sendMessageCount, setSendMessageCount] = useState(0);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     if (socketParams.socketIP !== "" && socketParams.port !== "") {
@@ -61,6 +63,7 @@ const MonitoringSection = () => {
             console.log(`Main thread: Message from worker ${i + 1}:`, event.data.message);
             updateLogs(`Worker ${i + 1}: ${event.data.message}`);
             setMessageCount(prev => prev + 1);
+            setLoading(false); // Stop loading when first message is received
           } else if (event.data.type === 'ack') {
             console.log(`Main thread: ACK from worker ${i + 1}:`, event.data.message);
             updateLogs(`Worker ${i + 1}: Sent ACK`);
@@ -89,7 +92,7 @@ const MonitoringSection = () => {
   useEffect(() => {
     if (!wsConnected) return;
 
-    const interval = setInterval(() => {
+    const updateGraph = () => {
       const currentTime = new Date().toLocaleTimeString();
 
       setLogCounts((prev) =>
@@ -110,9 +113,11 @@ const MonitoringSection = () => {
 
       setMessageCount(0);
       setSendMessageCount(0);
-    }, 1000);
 
-    return () => clearInterval(interval);
+      requestAnimationFrame(updateGraph);
+    };
+
+    requestAnimationFrame(updateGraph);
   }, [wsConnected, messageCount, sendMessageCount]);
 
   useEffect(() => {
@@ -211,12 +216,14 @@ const MonitoringSection = () => {
             </div>
 
             {/* User connected */}
-
             <div className="flex items-center gap-2">
               <FaUser className="text-white" />
               <h4 className="text-sm font-semibold text-white">
                 Users: {socketParams.threads}
               </h4>
+              {loading && (
+                <AiOutlineLoading3Quarters className="animate-spin text-white" />
+              )}
             </div>
           </div>
 
