@@ -88,10 +88,10 @@ const ParamSection = () => {
       </div>
       <div className="mt-5">
         <button
-          className="bg-blue-500 text-white p-2 rounded mr-1 hover:bg-blue-600 transition-all duration-200 text-xs"
+          className="bg-green-600 text-white p-2 rounded mr-1 hover:bg-green-700 transition-all duration-200 text-sm"
           onClick={handleDone}
         >
-          Done
+          Open connection
         </button>
       </div>
 
@@ -99,7 +99,7 @@ const ParamSection = () => {
         {isConnected ? (
           <div className="flex items-center text-green-300 text-sm mt-2">
             <GiNetworkBars className="mr-1" />
-            Ready to connect
+            Connection established to {socketIP}:{port}
           </div>
         ) : (
           <div className="flex items-center text-red-300 text-sm mt-2 animate-pulse font-bold">
