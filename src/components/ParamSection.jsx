@@ -42,7 +42,7 @@ const ParamSection = () => {
             value={socketIP}
             onChange={(e) => setSocketIP(e.target.value)}
             className="border p-2 rounded w-full hover:border-green-200 transition-all duration-150 text-green-300 text-xs focus-visible:outline-none"
-            placeholder="e.g ws://192.168.120.28"
+            placeholder="e.g 192.168.120.28"
           />
         </div>
         <div>

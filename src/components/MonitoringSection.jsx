@@ -128,7 +128,12 @@ const MonitoringSection = () => {
   }, [logs]);
 
   const updateLogs = (data) => {
-    const currentTime = new Date().toLocaleTimeString();
+    const currentTime = new Date().toLocaleTimeString("en-US", { 
+      hour12: false, 
+      hour: "2-digit", 
+      minute: "2-digit", 
+      second: "2-digit" 
+    }) + `.${new Date().getMilliseconds()}`;
     setLogs((prev) => [...prev, { time: currentTime, message: data }]);
   };
 
