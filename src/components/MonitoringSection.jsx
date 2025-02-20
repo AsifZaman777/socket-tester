@@ -147,7 +147,15 @@ const MonitoringSection = () => {
     setLogs((prev) => [...prev, { time: currentTime, message: data }]);
   };
 
-
+  const getMaxWorkerNumber = () => {
+    const workerNumbers = logs
+      .map(log => {
+        const match = log.message.match(/Worker (\d+):/);
+        return match ? parseInt(match[1], 10) : null;
+      })
+      .filter(num => num !== null);
+    return workerNumbers.length > 0 ? Math.max(...workerNumbers) : 0;
+  };
 
   const chartData = {
     labels,
@@ -232,7 +240,7 @@ const MonitoringSection = () => {
             <div className="flex items-center gap-2">
               <FaUser className="text-white" />
               <h4 className="text-sm font-semibold text-white">
-                Users: {socketParams.threads}
+                Users: {socketParams.threads} (Max Worker: {getMaxWorkerNumber()})
               </h4>
               {loading && (
                 <AiOutlineLoading3Quarters className="animate-spin text-white" />
@@ -250,7 +258,7 @@ const MonitoringSection = () => {
           </h4>
           <div
             id="log-container"
-            className="max-h-96 overflow-y-auto border border-gray-200 p-2 rounded-md bg-gray-900 text-green-300 text-xs"
+            className="max-h-96 overflow-y-auto border border-gray-200 p-4 py-10 rounded-md bg-gray-900 text-green-300 text-xs"
           >
             {logs.map((log, index) => (
               <div key={index}>
