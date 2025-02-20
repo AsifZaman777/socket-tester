@@ -122,8 +122,6 @@ const MonitoringSection = () => {
 
       setMessageCount(0);
       setSendMessageCount(0);
-
-      requestAnimationFrame(updateGraph);
     };
 
     requestAnimationFrame(updateGraph);
