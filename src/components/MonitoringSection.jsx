@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import Swal from "sweetalert2";
 import { Line } from "react-chartjs-2";
-import { FaWifi, FaUser } from "react-icons/fa";
+import { FaWifi, FaUser, FaNetworkWired } from "react-icons/fa";
 import { VscDebugDisconnect } from "react-icons/vsc";
 import { AiOutlineLoading3Quarters } from "react-icons/ai"; // Import loading icon
 import {
@@ -240,11 +240,17 @@ const MonitoringSection = () => {
             <div className="flex items-center gap-2">
               <FaUser className="text-white" />
               <h4 className="text-sm font-semibold text-white">
-                Users: {socketParams.threads} (Max Worker: {getMaxWorkerNumber()})
+                Requested to connect: {socketParams.threads}
               </h4>
               {loading && (
                 <AiOutlineLoading3Quarters className="animate-spin text-white" />
               )}
+            </div>
+            <div className="flex items-center gap-2">
+              <FaNetworkWired className="text-white" />
+              <h4 className="text-sm font-semibold text-white">
+                User connected: {getMaxWorkerNumber()}
+              </h4>
             </div>
           </div>
 
@@ -258,7 +264,7 @@ const MonitoringSection = () => {
           </h4>
           <div
             id="log-container"
-            className="max-h-96 overflow-y-auto border border-gray-200 p-4 py-10 rounded-md bg-gray-900 text-green-300 text-xs"
+            className="max-h-100 overflow-y-auto border border-gray-200 p-2 py-10 rounded-md bg-gray-900 text-green-300 text-xs"
           >
             {logs.map((log, index) => (
               <div key={index}>
