@@ -106,7 +106,7 @@ const ParamSection = () => {
           className="bg-green-600 text-white p-2 rounded mr-1 hover:bg-green-700 transition-all duration-200 text-sm"
           onClick={handleDone}
         >
-          Open connection
+          Connect
         </button>
       </div>
 

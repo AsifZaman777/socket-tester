@@ -45,9 +45,12 @@ const MonitoringSection = () => {
       const newWorkers = [];
 
       for (let i = 0; i < numThreads; i++) {
-        const worker = new Worker(new URL('../workers/socketWorker.js', import.meta.url), {
-          type: 'module',
-        });
+        const worker = new Worker(
+          new URL("../workers/socketWorker.js", import.meta.url),
+          {
+            type: "module",
+          }
+        );
 
         worker.postMessage({
           socketIP: socketParams.socketIP,
@@ -59,15 +62,21 @@ const MonitoringSection = () => {
         });
 
         worker.onmessage = (event) => {
-          if (event.data.type === 'message') {
-            console.log(`Main thread: Message from worker ${i + 1}:`, event.data.message);
+          if (event.data.type === "message") {
+            console.log(
+              `Main thread: Message from worker ${i + 1}:`,
+              event.data.message
+            );
             updateLogs(`Worker ${i + 1}: ${event.data.message}`);
-            setMessageCount(prev => prev + 1);
+            setMessageCount((prev) => prev + 1);
             setLoading(false); // Stop loading when first message is received
-          } else if (event.data.type === 'ack') {
-            console.log(`Main thread: ACK from worker ${i + 1}:`, event.data.message);
+          } else if (event.data.type === "ack") {
+            console.log(
+              `Main thread: ACK from worker ${i + 1}:`,
+              event.data.message
+            );
             updateLogs(`Worker ${i + 1}: Sent ACK`);
-            setSendMessageCount(prev => prev + 1);
+            setSendMessageCount((prev) => prev + 1);
           }
         };
 
@@ -82,7 +91,7 @@ const MonitoringSection = () => {
       setWsConnected(true);
 
       return () => {
-        newWorkers.forEach(worker => worker.terminate());
+        newWorkers.forEach((worker) => worker.terminate());
       };
     } else {
       updateLogs("Please enter valid Socket IP and Port");
@@ -128,34 +137,17 @@ const MonitoringSection = () => {
   }, [logs]);
 
   const updateLogs = (data) => {
-    const currentTime = new Date().toLocaleTimeString("en-US", { 
-      hour12: false, 
-      hour: "2-digit", 
-      minute: "2-digit", 
-      second: "2-digit" 
-    }) + `.${new Date().getMilliseconds()}`;
+    const currentTime =
+      new Date().toLocaleTimeString("en-US", {
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }) + `.${new Date().getMilliseconds()}`;
     setLogs((prev) => [...prev, { time: currentTime, message: data }]);
   };
 
-  const sendSession = () => {
-    if (
-      socketParams.socketIP !== "" &&
-      socketParams.port !== "" &&
-      socketParams.requestMessage !== ""
-    ) {
-      console.log("mt:LG");
-      const message = socketParams.requestMessage;
-      workers.forEach(worker => worker.postMessage({ type: 'send', message }));
-    } else {
-      Swal.fire({
-        background: "#1a202c",
-        color: "#f7fafc",
-        icon: "error",
-        title: "Invalid Input",
-        text: "Please enter a valid Socket IP, Port, or Request Message!",
-      });
-    }
-  };
+
 
   const chartData = {
     labels,
@@ -207,6 +199,7 @@ const MonitoringSection = () => {
               wsConnected ? "bg-green-700" : "bg-red-500"
             }`}
           >
+        
             {/* Status icons */}
             <div className="flex items-center gap-2">
               {wsConnected ? (
@@ -253,14 +246,6 @@ const MonitoringSection = () => {
           </div>
         </div>
       </div>
-
-      {/* Send Session Button */}
-      <button
-        className="mt-4 px-4 py-2 text-xs bg-green-500 hover:bg-green-600 text-white rounded"
-        onClick={sendSession}
-      >
-        Send Session
-      </button>
     </div>
   );
 };
