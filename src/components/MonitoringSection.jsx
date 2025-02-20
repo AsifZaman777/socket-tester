@@ -14,9 +14,10 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import zoomPlugin from 'chartjs-plugin-zoom'; // Import zoom plugin
 import { SocketContext } from "../context/SocketContext";
 
-// Register Chart.js components
+// Register Chart.js components and plugins
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -24,7 +25,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  zoomPlugin // Register zoom plugin
 );
 
 const MonitoringSection = () => {
@@ -105,17 +107,17 @@ const MonitoringSection = () => {
       const currentTime = new Date().toLocaleTimeString();
 
       setLogCounts((prev) =>
-        prev.length >= 20
+        prev.length >= 50
           ? [...prev.slice(1), messageCount]
           : [...prev, messageCount]
       );
       setSendLogCounts((prev) =>
-        prev.length >= 20
+        prev.length >= 50
           ? [...prev.slice(1), sendMessageCount]
           : [...prev, sendMessageCount]
       );
       setLabels((prev) =>
-        prev.length >= 20
+        prev.length >= 50
           ? [...prev.slice(1), currentTime]
           : [...prev, currentTime]
       );
@@ -155,14 +157,14 @@ const MonitoringSection = () => {
         data: logCounts,
         borderColor: "rgb(34, 197, 94)",
         backgroundColor: "rgba(34, 197, 94, 0.2)",
-        tension: 0.3,
+        tension: 0.5,
       },
       {
         label: "Send Messages Per Second",
         data: sendLogCounts,
         borderColor: "rgb(0, 123, 255)",
         backgroundColor: "rgba(0, 123, 255, 0.2)",
-        tension: 0.2,
+        tension: 0.5,
       },
     ],
   };
@@ -172,6 +174,21 @@ const MonitoringSection = () => {
     plugins: {
       legend: { display: true },
       tooltip: { enabled: true },
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: 'x',
+        },
+        zoom: {
+          wheel: {
+            enabled: true,
+          },
+          pinch: {
+            enabled: true,
+          },
+          mode: 'x',
+        },
+      },
     },
     scales: {
       x: { grid: { display: false } },
