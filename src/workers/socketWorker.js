@@ -1,33 +1,58 @@
 self.onmessage = function (e) {
   const { socketIP, port, requestMessage, ackDelay, ackMessage, threadId } = e.data;
-  const socketUrl = `ws://${socketIP}:${port}`;
-  const socket = new WebSocket(socketUrl);
+  let socket;
   let ackInterval;
+  let reconnectDelay = 1000;
+  const maxDelay = 30000;
 
-  socket.onopen = () => {
-    console.log(`Worker ${threadId}: WebSocket connected`);
-    socket.send(requestMessage);
-    ackInterval = setInterval(() => {
-      socket.send(ackMessage);
-      self.postMessage({ type: 'ack', message: ackMessage });
-    }, ackDelay);
+  const connectWebSocket = () => {
+    const socketUrl = `ws://${socketIP}:${port}`;
+    socket = new WebSocket(socketUrl);
+
+    socket.onopen = () => {
+      console.log(`Worker ${threadId}: WebSocket connected`);
+      socket.send(requestMessage);
+      self.postMessage({ type: 'connected', message: `Worker ${threadId}: WebSocket connected` });
+
+      reconnectDelay = 1000; //reset reconnect delaya after socket is opened
+
+      // ack message
+      ackInterval = setInterval(() => {
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.send(ackMessage);
+          self.postMessage({ type: 'ack', message: ackMessage });
+        }
+      }, ackDelay);
+    };
+
+    socket.onmessage = (event) => {
+      console.log(`Worker ${threadId}: Message received:`, event.data);
+      self.postMessage({ type: 'message', message: event.data });
+    };
+
+    socket.onclose = () => {
+      console.log(`Worker ${threadId}: WebSocket disconnected`);
+      clearInterval(ackInterval);
+      self.postMessage({ type: 'close', message: `Worker ${threadId}: WebSocket disconnected` });
+
+      //exponential backoff
+      setTimeout(() => {
+        console.log(`Worker ${threadId}: Reconnecting WebSocket in ${reconnectDelay / 1000}s...`);
+        connectWebSocket();
+      }, reconnectDelay);
+
+      reconnectDelay = Math.min(reconnectDelay * 2, maxDelay); // Increase retry time
+    };
+
+    socket.onerror = (err) => {
+      console.error(`Worker ${threadId}: WebSocket error:`, err);
+    };
   };
 
-  socket.onmessage = (event) => {
-    console.log(`Worker ${threadId}: Message received:`, event.data);
-    self.postMessage({ type: 'message', message: event.data });
-  };
-
-  socket.onclose = () => {
-    console.log(`Worker ${threadId}: WebSocket disconnected`);
-    clearInterval(ackInterval); // Clear the interval to stop sending ACKs
-    self.postMessage({ type: 'close', message: `Worker ${threadId}: WebSocket disconnected` });
-  };
-
-  socket.onerror = (err) => {
-    console.error(`Worker ${threadId}: WebSocket error:`, err);
-  };
+  // Start WebSocket connection
+  connectWebSocket();
 };
+
 
 
 {
