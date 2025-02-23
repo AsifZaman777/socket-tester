@@ -11,6 +11,7 @@
 /// ------------------------------------------------------------------
 /// Asif zaman 20-Feb-2025 [FEATURE] Implemented logic to testable for 1000 threads on browser.
 /// Asif zaman 23-Feb-2025 [FEATURE] Connection closing trace added to the log and graph.
+/// Asif zaman 23-Feb-2025 [BUG]     Resolved the ack interval issue after the connection closure.
 
  
 /// ==================================================================

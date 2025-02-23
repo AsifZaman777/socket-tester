@@ -2,11 +2,12 @@ self.onmessage = function (e) {
   const { socketIP, port, requestMessage, ackDelay, ackMessage, threadId } = e.data;
   const socketUrl = `ws://${socketIP}:${port}`;
   const socket = new WebSocket(socketUrl);
+  let ackInterval;
 
   socket.onopen = () => {
     console.log(`Worker ${threadId}: WebSocket connected`);
     socket.send(requestMessage);
-    setInterval(() => {
+    ackInterval = setInterval(() => {
       socket.send(ackMessage);
       self.postMessage({ type: 'ack', message: ackMessage });
     }, ackDelay);
@@ -19,6 +20,7 @@ self.onmessage = function (e) {
 
   socket.onclose = () => {
     console.log(`Worker ${threadId}: WebSocket disconnected`);
+    clearInterval(ackInterval); // Clear the interval to stop sending ACKs
     self.postMessage({ type: 'close', message: `Worker ${threadId}: WebSocket disconnected` });
   };
 
