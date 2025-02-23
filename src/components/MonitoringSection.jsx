@@ -33,12 +33,14 @@ const MonitoringSection = () => {
   const { socketParams } = useContext(SocketContext);
   const [logCounts, setLogCounts] = useState([]);
   const [sendLogCounts, setSendLogCounts] = useState([]);
+  const [closeLogCounts, setCloseLogCounts] = useState([]); // Add closeLogCounts
   const [labels, setLabels] = useState([]);
   const [logs, setLogs] = useState([]);
   const [wsConnected, setWsConnected] = useState(false);
   const [workers, setWorkers] = useState([]);
   const [messageCount, setMessageCount] = useState(0);
   const [sendMessageCount, setSendMessageCount] = useState(0);
+  const [closeMessageCount, setCloseMessageCount] = useState(0); // Add closeMessageCount
   const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
@@ -79,6 +81,13 @@ const MonitoringSection = () => {
             );
             updateLogs(`Worker ${i + 1}: Sent ACK`);
             setSendMessageCount((prev) => prev + 1);
+          } else if (event.data.type === "close") {
+            console.log(
+              `Main thread: Close from worker ${i + 1}:`,
+              event.data.message
+            );
+            updateLogs(event.data.message);
+            setCloseMessageCount((prev) => prev + 1);
           }
         };
 
@@ -116,6 +125,11 @@ const MonitoringSection = () => {
           ? [...prev.slice(1), sendMessageCount]
           : [...prev, sendMessageCount]
       );
+      setCloseLogCounts((prev) =>
+        prev.length >= 50
+          ? [...prev.slice(1), closeMessageCount]
+          : [...prev, closeMessageCount]
+      );
       setLabels((prev) =>
         prev.length >= 50
           ? [...prev.slice(1), currentTime]
@@ -124,10 +138,11 @@ const MonitoringSection = () => {
 
       setMessageCount(0);
       setSendMessageCount(0);
+      setCloseMessageCount(0);
     };
 
     requestAnimationFrame(updateGraph);
-  }, [wsConnected, messageCount, sendMessageCount]);
+  }, [wsConnected, messageCount, sendMessageCount, closeMessageCount]);
 
   useEffect(() => {
     const logContainer = document.getElementById("log-container");
@@ -172,6 +187,13 @@ const MonitoringSection = () => {
         data: sendLogCounts,
         borderColor: "rgb(0, 123, 255)",
         backgroundColor: "rgba(0, 123, 255, 0.2)",
+        tension: 0.5,
+      },
+      {
+        label: "Closed Connections",
+        data: closeLogCounts,
+        borderColor: "rgb(255, 0, 0)",
+        backgroundColor: "rgba(255, 0, 0, 0.2)",
         tension: 0.5,
       },
     ],
@@ -258,6 +280,7 @@ const MonitoringSection = () => {
         </div>
 
         {/* Logs Section */}
+
         <div className="p-4 border border-green-200 rounded-md shadow-md">
           <h4 className="text-sm font-semibold text-green-300 mb-2">
             Live Logs
@@ -275,7 +298,7 @@ const MonitoringSection = () => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
   );
 };
 

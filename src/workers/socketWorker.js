@@ -19,6 +19,7 @@ self.onmessage = function (e) {
 
   socket.onclose = () => {
     console.log(`Worker ${threadId}: WebSocket disconnected`);
+    self.postMessage({ type: 'close', message: `Worker ${threadId}: WebSocket disconnected` });
   };
 
   socket.onerror = (err) => {
