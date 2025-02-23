@@ -304,9 +304,15 @@ const MonitoringSection = () => {
         {/* Logs Section */}
 
         <div className="p-4 border border-green-200 rounded-md shadow-md">
-          <h4 className="text-sm font-semibold text-green-300 mb-2">
+          <div className="flex items-center justify-between mb-2">
+          <h4 className="text-sm font-semibold text-green-300">
             Live Logs
           </h4>
+        
+          {/**clear the logs */}
+          <input type="button" value="Clear Logs" onClick={() => setLogs([])} className="bg-red-500 text-white p-1 rounded hover:bg-red-600 transition-all duration-200 text-xs" />
+          </div>
+          
           <div
             id="log-container"
             className="max-h-100 overflow-y-auto border border-gray-200 p-2 py-10 rounded-md bg-gray-900 text-green-300 text-xs"
