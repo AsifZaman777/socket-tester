@@ -69,5 +69,7 @@ Main Thread Handling: The main thread listens for messages from the workers. Dep
 Graph Updates: The main thread periodically updates the graph data (logCounts and sendLogCounts) based on the message counts received from the workers. This ensures that the graph reflects the real-time data of received and sent messages.
 
 Session Management: When the "Send Session" button is clicked, the main thread sends a message to all workers to send the session message to the WebSocket server.
+
+Exponential backoff: When a WebSocket connection is closed, the worker implements an exponential backoff mechanism to reconnect to the server. This ensures that the worker retries connecting to the server with increasing delays until a successful connection is established.
    */
 }
