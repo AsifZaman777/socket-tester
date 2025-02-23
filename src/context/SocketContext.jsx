@@ -12,10 +12,12 @@ export const SocketProvider = ({ children }) => {
     threads: null,
   });
 
+  const [isDisconnected, setIsDisconnected] = useState(false); // Add isDisconnected state
+
   console.log(socketParams.requestMessage);
 
   return (
-    <SocketContext.Provider value={{ socketParams, setSocketParams }}>
+    <SocketContext.Provider value={{ socketParams, setSocketParams, isDisconnected, setIsDisconnected }}>
       {children}
     </SocketContext.Provider>
   );

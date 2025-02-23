@@ -30,10 +30,11 @@ ChartJS.register(
 );
 
 const MonitoringSection = () => {
-  const { socketParams } = useContext(SocketContext);
+  const { socketParams, isDisconnected } = useContext(SocketContext);
   const [logCounts, setLogCounts] = useState([]);
   const [sendLogCounts, setSendLogCounts] = useState([]);
   const [closeLogCounts, setCloseLogCounts] = useState([]); // Add closeLogCounts
+  const [disconnectLogCounts, setDisconnectLogCounts] = useState([]); // Add disconnectLogCounts
   const [labels, setLabels] = useState([]);
   const [logs, setLogs] = useState([]);
   const [wsConnected, setWsConnected] = useState(false);
@@ -41,6 +42,7 @@ const MonitoringSection = () => {
   const [messageCount, setMessageCount] = useState(0);
   const [sendMessageCount, setSendMessageCount] = useState(0);
   const [closeMessageCount, setCloseMessageCount] = useState(0); // Add closeMessageCount
+  const [disconnectMessageCount, setDisconnectMessageCount] = useState(0); // Add disconnectMessageCount
   const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
@@ -110,6 +112,13 @@ const MonitoringSection = () => {
   }, [socketParams.socketIP, socketParams.port, socketParams.threads]);
 
   useEffect(() => {
+    if (isDisconnected) {
+      updateLogs("Disconnected forcefully");
+      setDisconnectMessageCount((prev) => prev + 1);
+    }
+  }, [isDisconnected]);
+
+  useEffect(() => {
     if (!wsConnected) return;
 
     const updateGraph = () => {
@@ -130,6 +139,11 @@ const MonitoringSection = () => {
           ? [...prev.slice(1), closeMessageCount]
           : [...prev, closeMessageCount]
       );
+      setDisconnectLogCounts((prev) =>
+        prev.length >= 50
+          ? [...prev.slice(1), disconnectMessageCount]
+          : [...prev, disconnectMessageCount]
+      );
       setLabels((prev) =>
         prev.length >= 50
           ? [...prev.slice(1), currentTime]
@@ -139,10 +153,11 @@ const MonitoringSection = () => {
       setMessageCount(0);
       setSendMessageCount(0);
       setCloseMessageCount(0);
+      setDisconnectMessageCount(0);
     };
 
     requestAnimationFrame(updateGraph);
-  }, [wsConnected, messageCount, sendMessageCount, closeMessageCount]);
+  }, [wsConnected, messageCount, sendMessageCount, closeMessageCount, disconnectMessageCount]);
 
   useEffect(() => {
     const logContainer = document.getElementById("log-container");
@@ -194,6 +209,13 @@ const MonitoringSection = () => {
         data: closeLogCounts,
         borderColor: "rgb(255, 0, 0)",
         backgroundColor: "rgba(255, 0, 0, 0.2)",
+        tension: 0.5,
+      },
+      {
+        label: "Forceful Disconnections",
+        data: disconnectLogCounts,
+        borderColor: "rgb(255, 105, 180)",
+        backgroundColor: "rgba(255, 105, 180, 0.2)",
         tension: 0.5,
       },
     ],

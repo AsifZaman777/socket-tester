@@ -12,12 +12,13 @@ const ParamSection = () => {
   const [requestMessage, setRequestMessage] = useState("");
   const [ackMessage, setAckMessage] = useState(""); // Add ackMessage state
   const [isConnected, setIsConnected] = useState(false);
-  const { setSocketParams } = useContext(SocketContext);
+  const { setSocketParams, setIsDisconnected } = useContext(SocketContext);
 
   const handleDone = () => {
     if (socketIP && port) {
       setSocketParams({ socketIP, port, ackDelay, requestMessage, ackMessage, threads });
       setIsConnected(true);
+      setIsDisconnected(false);
     } else {
       Swal.fire({
         background: "#1a202c",
@@ -27,6 +28,19 @@ const ParamSection = () => {
         text: "Please fill in the required fields",
       });
     }
+  };
+
+  const handleDisconnect = () => {
+    setSocketParams({ socketIP: '', port: '', ackDelay: '', requestMessage: '', ackMessage: '', threads: null });
+    setIsConnected(false);
+    setIsDisconnected(true);
+    Swal.fire({
+      background: "#1a202c",
+      color: "#f7fafc",
+      icon: "success",
+      title: "Disconnected",
+      text: "All socket connections have been closed.",
+    });
   };
 
   return (
@@ -65,9 +79,6 @@ const ParamSection = () => {
             placeholder="e.g 1000"
           />
         </div>
-
-        
-      
         <div>
           <label className="text-xs">Request connection message</label>
           <input
@@ -78,7 +89,6 @@ const ParamSection = () => {
             placeholder={`{"data":{"16":"mt010","37":4325},"mt":"LG"}`}
           />
         </div>
-
         <div>
           <label className="text-xs">Ack message</label>
           <input
@@ -89,8 +99,7 @@ const ParamSection = () => {
             placeholder={`{"mt":"AC","data":{}}`}
           />
         </div>
-
-          <div>
+        <div>
           <label className="text-xs">No of Threads (Users)</label>
           <input
             type="text"
@@ -107,6 +116,12 @@ const ParamSection = () => {
           onClick={handleDone}
         >
           Connect
+        </button>
+        <button
+          className="bg-red-600 text-white p-2 rounded hover:bg-red-700 transition-all duration-200 text-sm"
+          onClick={handleDisconnect}
+        >
+          Disconnect
         </button>
       </div>
 
