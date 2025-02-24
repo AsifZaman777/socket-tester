@@ -29,6 +29,7 @@ import { SocketProvider } from "./context/SocketContext";
 import Navbar from "./components/Navbar";
 import ParamSection from "./components/ParamSection";
 import MonitoringSection from "./components/MonitoringSection";
+import Footer from "./components/Footer";
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
       <Navbar />
       <ParamSection />
       <MonitoringSection />
+      <Footer />
     </SocketProvider>
   );
 };
