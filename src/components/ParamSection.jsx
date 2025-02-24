@@ -16,7 +16,7 @@ const ParamSection = () => {
   const { setSocketParams, setIsDisconnected } = useContext(SocketContext);
 
   const handleDone = () => {
-    if (socketIP && port) {
+    if (socketIP) {
       setSocketParams({ protocol, socketIP, port, ackDelay, requestMessage, ackMessage, threads });
       setIsConnected(true);
       setIsDisconnected(false);
@@ -134,7 +134,9 @@ const ParamSection = () => {
         {isConnected ? (
           <div className="flex items-center text-green-300 text-sm mt-2">
             <GiNetworkBars className="mr-1" />
-            Connection established to {protocol}{socketIP}:{port}
+            Connection established to {
+              port? `${protocol}${socketIP}:${port}` : `${protocol}${socketIP}`
+            }
           </div>
         ) : (
           <div className="flex items-center text-red-300 text-sm mt-2 animate-pulse font-bold">

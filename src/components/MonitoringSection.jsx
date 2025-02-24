@@ -46,7 +46,7 @@ const MonitoringSection = () => {
   const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
-    if (socketParams.socketIP !== "" && socketParams.port !== "") {
+    if (socketParams.socketIP !== "") {
       const numThreads = parseInt(socketParams.threads, 10);
       const newWorkers = [];
 
@@ -108,7 +108,7 @@ const MonitoringSection = () => {
         newWorkers.forEach((worker) => worker.terminate());
       };
     } else {
-      updateLogs("Please enter valid Socket IP and Port");
+      updateLogs("Please enter valid Socket IP");
     }
   }, [socketParams.protocol,socketParams.socketIP, socketParams.port, socketParams.threads]);
 
