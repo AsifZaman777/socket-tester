@@ -191,28 +191,28 @@ const MonitoringSection = () => {
     labels,
     datasets: [
       {
-        label: "Received Messages Per Second",
+        label: "Received Messages",
         data: logCounts,
         borderColor: "rgb(34, 197, 94)",
         backgroundColor: "rgba(34, 197, 94, 0.2)",
         tension: 0.5,
       },
       {
-        label: "Send Messages Per Second",
+        label: "Sent Messages",
         data: sendLogCounts,
         borderColor: "rgb(0, 123, 255)",
         backgroundColor: "rgba(0, 123, 255, 0.2)",
         tension: 0.5,
       },
       {
-        label: "Closed Connections",
+        label: "Server disconnected",
         data: closeLogCounts,
         borderColor: "rgb(255, 0, 0)",
         backgroundColor: "rgba(255, 0, 0, 0.2)",
         tension: 0.5,
       },
       {
-        label: "Forceful Disconnections",
+        label: "Forcefully Disconnected",
         data: disconnectLogCounts,
         borderColor: "rgb(255, 105, 180)",
         backgroundColor: "rgba(255, 105, 180, 0.2)",

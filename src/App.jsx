@@ -14,6 +14,7 @@
 /// Asif zaman 23-Feb-2025 [BUG]     Resolved the ack interval issue after the connection closure.
 /// Asif zaman 23-Feb-2025 [FEATURE] Disconnect button to disconnect the socket instacnce forcefully.
 /// Asif zaman 23-Feb-2025 [FEATURE] Ping the server continuously using exponential backoff retry technique to reconnect automatically when the server is up.
+/// Asif zaman 24-Feb-2025 [UPDATE]  Graph notations updated.
  
 /// ==================================================================
 /// </summary>
