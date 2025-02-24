@@ -53,7 +53,7 @@ const ParamSection = () => {
           <select
             value={protocol}
             onChange={(e) => setProtocol(e.target.value)}
-            className="border p-2 rounded w-full hover:border-green-200 transition-all duration-150 text-green-300 text-xs focus-visible:outline-none"
+            className="border bg-black p-2 rounded w-full hover:border-green-200 transition-all duration-150 text-green-300 text-xs focus-visible:outline-none"
           >
             <option value="ws://">ws://</option>
             <option value="wss://">wss://</option>
@@ -122,10 +122,10 @@ const ParamSection = () => {
         </div>
       </div>
       <div className="mt-5">
-        <button className="bg-green-600 text-white p-2 rounded mr-1 hover:bg-green-700 transition-all duration-200 text-sm" onClick={handleDone}>
+        <button className="bg-neutral-800 border-2 border-green-500 text-white p-2 rounded mr-1 hover:border-green-400 transition-all duration-200 text-sm" onClick={handleDone}>
           Connect
         </button>
-        <button className="bg-red-600 text-white p-2 rounded hover:bg-red-700 transition-all duration-200 text-sm" onClick={handleDisconnect}>
+        <button className="bg-neutral-800 border-2 border-red-400 text-white p-2 rounded hover:border-red-300 transition-all duration-200 text-sm" onClick={handleDisconnect}>
           Disconnect
         </button>
       </div>
