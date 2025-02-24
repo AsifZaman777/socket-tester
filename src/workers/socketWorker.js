@@ -1,5 +1,5 @@
 self.onmessage = function (e) {
-  const { protocol,socketIP, port, requestMessage, ackDelay, ackMessage, threadId } = e.data;
+  const { protocol, socketIP, port, requestMessage, ackDelay, ackMessage, threadId } = e.data;
   let socket;
   let ackInterval;
   let reconnectDelay = 1000;
@@ -14,15 +14,22 @@ self.onmessage = function (e) {
       socket.send(requestMessage);
       self.postMessage({ type: 'connected', message: `Worker ${threadId}: WebSocket connected` });
 
-      reconnectDelay = 1000; //reset reconnect delaya after socket is opened
+      reconnectDelay = 1000; //reset reconnect delay after socket is opened
 
       // ack message
-      ackInterval = setInterval(() => {
+      if (ackDelay) {
+        ackInterval = setInterval(() => {
+          if (socket.readyState === WebSocket.OPEN) {
+            socket.send(ackMessage);
+            self.postMessage({ type: 'ack', message: ackMessage });
+          }
+        }, ackDelay);
+      } else {
         if (socket.readyState === WebSocket.OPEN) {
           socket.send(ackMessage);
           self.postMessage({ type: 'ack', message: ackMessage });
         }
-      }, ackDelay);
+      }
     };
 
     socket.onmessage = (event) => {
