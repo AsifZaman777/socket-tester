@@ -16,6 +16,7 @@
 /// Asif zaman 23-Feb-2025 [FEATURE] Ping the server continuously using exponential backoff retry technique to reconnect automatically when the server is up.
 /// Asif zaman 24-Feb-2025 [UPDATE]  Graph notations updated.
 /// Asif zaman 24-Feb-2025 [FEATURE] Implemented socket protocol dynamically.
+/// Asif zaman 24-Feb-2025 [BUG] Get max connected reset in the monitoringSection.
  
 /// ==================================================================
 /// </summary>
