@@ -50,7 +50,7 @@ const MonitoringSection = () => {
     x: { min: null, max: null },
     y: { min: null, max: null },
   });
-  const chartRef = useRef(null); // Ref for chart instance
+  const chartRef = useRef(null);
   //#endregion
 
   //#region Workers config
