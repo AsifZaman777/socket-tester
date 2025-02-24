@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import Swal from "sweetalert2";
 import { Line } from "react-chartjs-2";
 import { FaWifi, FaUser, FaNetworkWired } from "react-icons/fa";
@@ -14,7 +14,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import zoomPlugin from 'chartjs-plugin-zoom'; // Import zoom plugin
+import zoomPlugin from "chartjs-plugin-zoom"; // Import zoom plugin
 import { SocketContext } from "../context/SocketContext";
 
 // Register Chart.js components and plugins
@@ -34,19 +34,24 @@ const MonitoringSection = () => {
   const { socketParams, isDisconnected } = useContext(SocketContext);
   const [logCounts, setLogCounts] = useState([]);
   const [sendLogCounts, setSendLogCounts] = useState([]);
-  const [closeLogCounts, setCloseLogCounts] = useState([]); // Add closeLogCounts
-  const [disconnectLogCounts, setDisconnectLogCounts] = useState([]); // Add disconnectLogCounts
+  const [closeLogCounts, setCloseLogCounts] = useState([]);
+  const [disconnectLogCounts, setDisconnectLogCounts] = useState([]);
   const [labels, setLabels] = useState([]);
   const [logs, setLogs] = useState([]);
   const [wsConnected, setWsConnected] = useState(false);
   const [workers, setWorkers] = useState([]);
   const [messageCount, setMessageCount] = useState(0);
   const [sendMessageCount, setSendMessageCount] = useState(0);
-  const [closeMessageCount, setCloseMessageCount] = useState(0); // Add closeMessageCount
-  const [disconnectMessageCount, setDisconnectMessageCount] = useState(0); // Add disconnectMessageCount
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [closeMessageCount, setCloseMessageCount] = useState(0);
+  const [disconnectMessageCount, setDisconnectMessageCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [visibleRange, setVisibleRange] = useState({ min: null, max: null });
+  const [zoomState, setZoomState] = useState({
+    x: { min: null, max: null },
+    y: { min: null, max: null },
+  });
+  const chartRef = useRef(null); // Ref for chart instance
   //#endregion
-
 
   //#region Workers config
   useEffect(() => {
@@ -68,7 +73,7 @@ const MonitoringSection = () => {
           port: socketParams.port,
           requestMessage: socketParams.requestMessage,
           ackDelay: socketParams.ackDelay,
-          ackMessage: socketParams.ackMessage, // Pass ackMessage to worker
+          ackMessage: socketParams.ackMessage,
           threadId: i + 1,
         });
 
@@ -114,10 +119,15 @@ const MonitoringSection = () => {
     } else {
       updateLogs("Please enter valid Socket IP");
     }
-  }, [socketParams.protocol,socketParams.socketIP, socketParams.port, socketParams.threads]);
+  }, [
+    socketParams.protocol,
+    socketParams.socketIP,
+    socketParams.port,
+    socketParams.threads,
+  ]);
   //#endregion
 
-  //#region force disconnection
+  //#region Force disconnection
   useEffect(() => {
     if (isDisconnected) {
       updateLogs("Disconnected forcefully");
@@ -133,41 +143,60 @@ const MonitoringSection = () => {
     const updateGraph = () => {
       const currentTime = new Date().toLocaleTimeString();
 
+      // Update datasets (store up to 1440 points)
       setLogCounts((prev) =>
-        prev.length >= 50
+        prev.length >= 1440
           ? [...prev.slice(1), messageCount]
           : [...prev, messageCount]
       );
       setSendLogCounts((prev) =>
-        prev.length >= 50
+        prev.length >= 1440
           ? [...prev.slice(1), sendMessageCount]
           : [...prev, sendMessageCount]
       );
       setCloseLogCounts((prev) =>
-        prev.length >= 50
+        prev.length >= 1440
           ? [...prev.slice(1), closeMessageCount]
           : [...prev, closeMessageCount]
       );
       setDisconnectLogCounts((prev) =>
-        prev.length >= 50
+        prev.length >= 1440
           ? [...prev.slice(1), disconnectMessageCount]
           : [...prev, disconnectMessageCount]
       );
       setLabels((prev) =>
-        prev.length >= 50
+        prev.length >= 1440
           ? [...prev.slice(1), currentTime]
           : [...prev, currentTime]
       );
 
+      // Reset message counts
       setMessageCount(0);
       setSendMessageCount(0);
       setCloseMessageCount(0);
       setDisconnectMessageCount(0);
+
+      // Update visible range to show the most recent 50 points
+      const totalPoints = logCounts.length;
+      if (totalPoints > 50) {
+        setVisibleRange({
+          min: totalPoints - 50,
+          max: totalPoints - 1,
+        });
+      } else {
+        setVisibleRange({ min: 0, max: totalPoints - 1 });
+      }
     };
 
     requestAnimationFrame(updateGraph);
-  }, [wsConnected, messageCount, sendMessageCount, closeMessageCount, disconnectMessageCount]);
-   //#endregion
+  }, [
+    wsConnected,
+    messageCount,
+    sendMessageCount,
+    closeMessageCount,
+    disconnectMessageCount,
+  ]);
+  //#endregion
 
   //#region Scroll to bottom
   useEffect(() => {
@@ -195,16 +224,16 @@ const MonitoringSection = () => {
   const getMaxWorkerNumber = () => {
     if (isDisconnected) return 0;
     const workerNumbers = logs
-      .map(log => {
+      .map((log) => {
         const match = log.message.match(/Worker (\d+):/);
         return match ? parseInt(match[1], 10) : null;
       })
-      .filter(num => num !== null);
+      .filter((num) => num !== null);
     return workerNumbers.length > 0 ? Math.max(...workerNumbers) : 0;
   };
   //#endregion
 
-  //#region ChartJs Labels
+  //#region Chart Data
   const chartData = {
     labels,
     datasets: [
@@ -240,7 +269,7 @@ const MonitoringSection = () => {
   };
   //#endregion
 
-   //#region ChartJs Options
+  //#region Chart Options
   const chartOptions = {
     responsive: true,
     plugins: {
@@ -249,7 +278,11 @@ const MonitoringSection = () => {
       zoom: {
         pan: {
           enabled: true,
-          mode: 'x',
+          mode: "x",
+          onPan: ({ chart }) => {
+            const { min, max } = chart.scales.x;
+            setVisibleRange({ min, max });
+          },
         },
         zoom: {
           wheel: {
@@ -258,19 +291,27 @@ const MonitoringSection = () => {
           pinch: {
             enabled: true,
           },
-          mode: 'x',
+          mode: "x",
+          onZoom: ({ chart }) => {
+            const { min, max } = chart.scales.x;
+            setVisibleRange({ min, max });
+          },
         },
       },
     },
     scales: {
-      x: { grid: { display: false } },
+      x: {
+        grid: { display: false },
+        min: visibleRange.min,
+        max: visibleRange.max,
+      },
       y: {
         beginAtZero: true,
         ticks: { stepSize: 1, maxTicksLimit: 10 },
       },
     },
   };
-//#endregion
+  //#endregion
 
   return (
     <div className="p-4 m-10 border-2 border-green-200 rounded-md shadow-md">
@@ -287,7 +328,6 @@ const MonitoringSection = () => {
               wsConnected ? "bg-green-700" : "bg-red-500"
             }`}
           >
-        
             {/* Status icons */}
             <div className="flex items-center gap-2">
               {wsConnected ? (
@@ -319,21 +359,35 @@ const MonitoringSection = () => {
             </div>
           </div>
 
-          <Line data={chartData} options={chartOptions} />
+          <Line ref={chartRef} data={chartData} options={chartOptions} />
         </div>
 
         {/* Logs Section */}
-
         <div className="p-4 border border-green-200 rounded-md shadow-md">
           <div className="flex items-center justify-between mb-2">
-          <h4 className="text-sm font-semibold text-green-300">
-            Live Logs
-          </h4>
-        
-          {/**clear the logs */}
-          <input type="button" value="Clear Logs" onClick={() => setLogs([])} className="bg-red-500 text-white p-1 rounded hover:bg-red-600 transition-all duration-200 text-xs" />
+            <h4 className="text-sm font-semibold text-green-300">Live Logs</h4>
+            <div className="flex gap-2">
+              <input
+                type="button"
+                value="Clear Logs"
+                onClick={() => setLogs([])}
+                className="bg-red-500 text-white p-1 rounded hover:bg-red-600 transition-all duration-200 text-xs"
+              />
+              <input
+                type="button"
+                value="Reset Zoom"
+                onClick={() => {
+                  const totalPoints = logCounts.length;
+                  setVisibleRange({
+                    min: totalPoints > 50 ? totalPoints - 50 : 0,
+                    max: totalPoints - 1,
+                  });
+                }}
+                className="bg-blue-500 text-white p-1 rounded hover:bg-blue-600 transition-all duration-200 text-xs"
+              />
+            </div>
           </div>
-          
+
           <div
             id="log-container"
             className="max-h-100 overflow-y-auto border border-gray-200 p-2 py-10 rounded-md bg-gray-900 text-green-300 text-xs"
@@ -347,7 +401,7 @@ const MonitoringSection = () => {
           </div>
         </div>
       </div>
-      </div>
+    </div>
   );
 };
 
