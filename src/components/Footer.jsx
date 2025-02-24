@@ -14,7 +14,7 @@ const Footer = () => {
       <div className="flex flex-wrap justify-center items-center space-x-4 text-sm">
         {/* Project Name */}
         <span className="text-green-200 font-semibold">
-          Socket Health Monitor
+          Websocket Health Monitor
         </span>
 
         {/* Developer Info */}
