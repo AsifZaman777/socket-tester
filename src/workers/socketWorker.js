@@ -1,12 +1,12 @@
 self.onmessage = function (e) {
-  const { socketIP, port, requestMessage, ackDelay, ackMessage, threadId } = e.data;
+  const { protocol,socketIP, port, requestMessage, ackDelay, ackMessage, threadId } = e.data;
   let socket;
   let ackInterval;
   let reconnectDelay = 1000;
   const maxDelay = 30000;
 
   const connectWebSocket = () => {
-    const socketUrl = `ws://${socketIP}:${port}`;
+    const socketUrl = `${protocol}${socketIP}:${port}`;
     socket = new WebSocket(socketUrl);
 
     socket.onopen = () => {

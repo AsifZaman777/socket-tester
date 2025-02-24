@@ -59,6 +59,7 @@ const MonitoringSection = () => {
         );
 
         worker.postMessage({
+          protocol: socketParams.protocol,
           socketIP: socketParams.socketIP,
           port: socketParams.port,
           requestMessage: socketParams.requestMessage,
@@ -109,7 +110,7 @@ const MonitoringSection = () => {
     } else {
       updateLogs("Please enter valid Socket IP and Port");
     }
-  }, [socketParams.socketIP, socketParams.port, socketParams.threads]);
+  }, [socketParams.protocol,socketParams.socketIP, socketParams.port, socketParams.threads]);
 
   useEffect(() => {
     if (isDisconnected) {

@@ -5,18 +5,19 @@ import { SocketContext } from "../context/SocketContext";
 import Swal from "sweetalert2";
 
 const ParamSection = () => {
+  const [protocol, setProtocol] = useState("ws://");
   const [socketIP, setSocketIP] = useState("");
   const [port, setPort] = useState("");
   const [threads, setThreads] = useState("");
   const [ackDelay, setAckDelay] = useState("");
   const [requestMessage, setRequestMessage] = useState("");
-  const [ackMessage, setAckMessage] = useState(""); // Add ackMessage state
+  const [ackMessage, setAckMessage] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   const { setSocketParams, setIsDisconnected } = useContext(SocketContext);
 
   const handleDone = () => {
     if (socketIP && port) {
-      setSocketParams({ socketIP, port, ackDelay, requestMessage, ackMessage, threads });
+      setSocketParams({ protocol, socketIP, port, ackDelay, requestMessage, ackMessage, threads });
       setIsConnected(true);
       setIsDisconnected(false);
     } else {
@@ -31,7 +32,7 @@ const ParamSection = () => {
   };
 
   const handleDisconnect = () => {
-    setSocketParams({ socketIP: '', port: '', ackDelay: '', requestMessage: '', ackMessage: '', threads: null });
+    setSocketParams({ protocol: "", socketIP: "", port: "", ackDelay: "", requestMessage: "", ackMessage: "", threads: null });
     setIsConnected(false);
     setIsDisconnected(true);
     Swal.fire({
@@ -45,10 +46,20 @@ const ParamSection = () => {
 
   return (
     <div className="p-2 m-20 border-2 border-green-200 rounded-md shadow-md mt-5">
-      <h2 className="text-md font-semibold text-green-300 border-b-1 mb-5">
-        Socket Connection
-      </h2>
+      <h2 className="text-md font-semibold text-green-300 border-b-1 mb-5">Socket Connection</h2>
       <div className="grid grid-cols-4 gap-2">
+        <div>
+          <label className="text-xs">Protocol</label>
+          <select
+            value={protocol}
+            onChange={(e) => setProtocol(e.target.value)}
+            className="border p-2 rounded w-full hover:border-green-200 transition-all duration-150 text-green-300 text-xs focus-visible:outline-none"
+          >
+            <option value="ws://">ws://</option>
+            <option value="wss://">wss://</option>
+            <option value="">null</option>
+          </select>
+        </div>
         <div>
           <label className="text-xs">Socket IP</label>
           <input
@@ -70,7 +81,7 @@ const ParamSection = () => {
           />
         </div>
         <div>
-          <label className="text-xs">Ack Delay(ms)</label>
+          <label className="text-xs">Ack Delay (ms)</label>
           <input
             type="text"
             value={ackDelay}
@@ -85,7 +96,7 @@ const ParamSection = () => {
             type="text"
             value={requestMessage}
             onChange={(e) => setRequestMessage(e.target.value)}
-            className="border p-2  rounded w-full hover:border-green-200 transition-all duration-150 text-green-300 text-xs focus-visible:outline-none"
+            className="border p-2 rounded w-full hover:border-green-200 transition-all duration-150 text-green-300 text-xs focus-visible:outline-none"
             placeholder={`{"data":{"16":"mt010","37":4325},"mt":"LG"}`}
           />
         </div>
@@ -95,7 +106,7 @@ const ParamSection = () => {
             type="text"
             value={ackMessage}
             onChange={(e) => setAckMessage(e.target.value)}
-            className="border p-2  rounded w-full hover:border-green-200 transition-all duration-150 text-green-300 text-xs focus-visible:outline-none"
+            className="border p-2 rounded w-full hover:border-green-200 transition-all duration-150 text-green-300 text-xs focus-visible:outline-none"
             placeholder={`{"mt":"AC","data":{}}`}
           />
         </div>
@@ -111,16 +122,10 @@ const ParamSection = () => {
         </div>
       </div>
       <div className="mt-5">
-        <button
-          className="bg-green-600 text-white p-2 rounded mr-1 hover:bg-green-700 transition-all duration-200 text-sm"
-          onClick={handleDone}
-        >
+        <button className="bg-green-600 text-white p-2 rounded mr-1 hover:bg-green-700 transition-all duration-200 text-sm" onClick={handleDone}>
           Connect
         </button>
-        <button
-          className="bg-red-600 text-white p-2 rounded hover:bg-red-700 transition-all duration-200 text-sm"
-          onClick={handleDisconnect}
-        >
+        <button className="bg-red-600 text-white p-2 rounded hover:bg-red-700 transition-all duration-200 text-sm" onClick={handleDisconnect}>
           Disconnect
         </button>
       </div>
@@ -129,7 +134,7 @@ const ParamSection = () => {
         {isConnected ? (
           <div className="flex items-center text-green-300 text-sm mt-2">
             <GiNetworkBars className="mr-1" />
-            Connection established to {socketIP}:{port}
+            Connection established to {protocol}{socketIP}:{port}
           </div>
         ) : (
           <div className="flex items-center text-red-300 text-sm mt-2 animate-pulse font-bold">
