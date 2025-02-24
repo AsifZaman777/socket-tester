@@ -179,6 +179,7 @@ const MonitoringSection = () => {
   };
 
   const getMaxWorkerNumber = () => {
+    if (isDisconnected) return 0;
     const workerNumbers = logs
       .map(log => {
         const match = log.message.match(/Worker (\d+):/);
@@ -294,7 +295,7 @@ const MonitoringSection = () => {
             <div className="flex items-center gap-2">
               <FaNetworkWired className="text-white" />
               <h4 className="text-sm font-semibold text-white">
-                User connected: {getMaxWorkerNumber()}
+                Max User Connected: {getMaxWorkerNumber()}
               </h4>
             </div>
           </div>
