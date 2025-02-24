@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import { Line } from "react-chartjs-2";
 import { FaWifi, FaUser, FaNetworkWired } from "react-icons/fa";
 import { VscDebugDisconnect } from "react-icons/vsc";
-import { AiOutlineLoading3Quarters } from "react-icons/ai"; // Import loading icon
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -30,6 +30,7 @@ ChartJS.register(
 );
 
 const MonitoringSection = () => {
+  //#region State Variables
   const { socketParams, isDisconnected } = useContext(SocketContext);
   const [logCounts, setLogCounts] = useState([]);
   const [sendLogCounts, setSendLogCounts] = useState([]);
@@ -44,7 +45,10 @@ const MonitoringSection = () => {
   const [closeMessageCount, setCloseMessageCount] = useState(0); // Add closeMessageCount
   const [disconnectMessageCount, setDisconnectMessageCount] = useState(0); // Add disconnectMessageCount
   const [loading, setLoading] = useState(true); // Add loading state
+  //#endregion
 
+
+  //#region Workers config
   useEffect(() => {
     if (socketParams.socketIP !== "") {
       const numThreads = parseInt(socketParams.threads, 10);
@@ -111,14 +115,18 @@ const MonitoringSection = () => {
       updateLogs("Please enter valid Socket IP");
     }
   }, [socketParams.protocol,socketParams.socketIP, socketParams.port, socketParams.threads]);
+  //#endregion
 
+  //#region force disconnection
   useEffect(() => {
     if (isDisconnected) {
       updateLogs("Disconnected forcefully");
       setDisconnectMessageCount((prev) => prev + 1);
     }
   }, [isDisconnected]);
+  //#endregion
 
+  //#region Graph update
   useEffect(() => {
     if (!wsConnected) return;
 
@@ -159,14 +167,18 @@ const MonitoringSection = () => {
 
     requestAnimationFrame(updateGraph);
   }, [wsConnected, messageCount, sendMessageCount, closeMessageCount, disconnectMessageCount]);
+   //#endregion
 
+  //#region Scroll to bottom
   useEffect(() => {
     const logContainer = document.getElementById("log-container");
     if (logContainer) {
       logContainer.scrollTop = logContainer.scrollHeight;
     }
   }, [logs]);
+  //#endregion
 
+  //#region Update logs
   const updateLogs = (data) => {
     const currentTime =
       new Date().toLocaleTimeString("en-US", {
@@ -177,7 +189,9 @@ const MonitoringSection = () => {
       }) + `.${new Date().getMilliseconds()}`;
     setLogs((prev) => [...prev, { time: currentTime, message: data }]);
   };
+  //#endregion
 
+  //#region Max worker number
   const getMaxWorkerNumber = () => {
     if (isDisconnected) return 0;
     const workerNumbers = logs
@@ -188,7 +202,9 @@ const MonitoringSection = () => {
       .filter(num => num !== null);
     return workerNumbers.length > 0 ? Math.max(...workerNumbers) : 0;
   };
+  //#endregion
 
+  //#region ChartJs Labels
   const chartData = {
     labels,
     datasets: [
@@ -222,7 +238,9 @@ const MonitoringSection = () => {
       },
     ],
   };
+  //#endregion
 
+   //#region ChartJs Options
   const chartOptions = {
     responsive: true,
     plugins: {
@@ -252,6 +270,7 @@ const MonitoringSection = () => {
       },
     },
   };
+//#endregion
 
   return (
     <div className="p-4 m-10 border-2 border-green-200 rounded-md shadow-md">
