@@ -342,7 +342,7 @@ const MonitoringSection = () => {
             </div>
 
             {/* User connected */}
-            <div className="flex items-center gap-2">
+            <div className="flex gap-0">
               <FaUser className="text-white" />
               <h4 className="text-sm font-semibold text-white">
                 Requested to connect: {socketParams.threads}
