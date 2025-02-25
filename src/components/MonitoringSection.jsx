@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import { Line } from "react-chartjs-2";
 import { FaWifi, FaUser, FaNetworkWired } from "react-icons/fa";
 import { VscDebugDisconnect } from "react-icons/vsc";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -355,14 +355,11 @@ const MonitoringSection = () => {
             </div>
 
             {/* User connected */}
-            <div className="flex gap-0">
+            <div className="flex gap-2">
               <FaUser className="text-white" />
               <h4 className="text-sm font-semibold text-white">
                 Requested to connect: {socketParams.threads}
               </h4>
-              {loading && (
-                <AiOutlineLoading3Quarters className="animate-spin text-white" />
-              )}
             </div>
             <div className="flex items-center gap-2">
               <FaNetworkWired className="text-white" />
@@ -370,7 +367,20 @@ const MonitoringSection = () => {
                 Max User Connected: {getMaxWorkerNumber()}
               </h4>
             </div>
+            <input
+                type="button"
+                value="Reset zoom"
+                onClick={() => {
+                  const totalPoints = logCounts.length;
+                  setVisibleRange({
+                    min: totalPoints > 50 ? totalPoints - 50 : 0,
+                    max: totalPoints - 1,
+                  });
+                }}
+                className="border-2 border-white text-white p-1 rounded hover:border-slate-300 transition-all duration-200 text-xs"
+              />
           </div>
+          
 
           <Line ref={chartRef} data={chartData} options={chartOptions} />
         </div>
@@ -386,23 +396,12 @@ const MonitoringSection = () => {
                 onClick={() => setLogs([])}
                 className="bg-red-500 text-white p-1 rounded hover:bg-red-600 transition-all duration-200 text-xs"
               />
-              <input
-                type="button"
-                value="Reset Zoom"
-                onClick={() => {
-                  const totalPoints = logCounts.length;
-                  setVisibleRange({
-                    min: totalPoints > 50 ? totalPoints - 50 : 0,
-                    max: totalPoints - 1,
-                  });
-                }}
-                className="bg-blue-500 text-white p-1 rounded hover:bg-blue-600 transition-all duration-200 text-xs"
-              />
+             
               <input
                 type="button"
                 value="Download Logs"
                 onClick={downloadLogs}
-                className="bg-green-500 text-white p-1 rounded hover:bg-green-600 transition-all duration-200 text-xs"
+                className="bg-blue-500 text-white p-1 rounded hover:bg-blue-600 transition-all duration-200 text-xs"
               />
             </div>
           </div>
