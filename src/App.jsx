@@ -20,6 +20,7 @@
 /// Asif zaman 24-Feb-2025 [UPDATE]  Null AckDelay handling for the sockets have by default ack.
 /// Asif zaman 24-Feb-2025 [UPDATE]  Null port has been handled.
 /// Asif zaman 24-Feb-2025 [FEATURE] Preserve graph of more than 50 timeframes.
+/// Asif zaman 25-Feb-2025 [FEATURE] Downloadable log as txt file.
 
 /// ==================================================================
 /// </summary>

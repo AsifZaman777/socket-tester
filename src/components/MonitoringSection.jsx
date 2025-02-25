@@ -233,6 +233,19 @@ const MonitoringSection = () => {
   };
   //#endregion
 
+  //#region Download Logs
+  const downloadLogs = () => {
+    const logText = logs.map(log => `${log.time}: ${log.message}`).join("\n");
+    const blob = new Blob([logText], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "logs.txt";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  //#endregion
+
   //#region Chart Data
   const chartData = {
     labels,
@@ -384,6 +397,12 @@ const MonitoringSection = () => {
                   });
                 }}
                 className="bg-blue-500 text-white p-1 rounded hover:bg-blue-600 transition-all duration-200 text-xs"
+              />
+              <input
+                type="button"
+                value="Download Logs"
+                onClick={downloadLogs}
+                className="bg-green-500 text-white p-1 rounded hover:bg-green-600 transition-all duration-200 text-xs"
               />
             </div>
           </div>
