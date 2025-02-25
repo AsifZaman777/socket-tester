@@ -6,6 +6,7 @@ import {
   FaHeart,
   FaWhatsapp,
 } from "react-icons/fa"; // Icons for social media
+import { IoCode } from "react-icons/io5";
 import { SiGmail } from "react-icons/si"; // Gmail icon
 
 const Footer = () => {
@@ -19,8 +20,8 @@ const Footer = () => {
 
         {/* Developer Info */}
         <span className="flex items-center">
-          Developed with by{" "}
-          <span className="font-semibold ml-1">Asif Zaman</span>
+          <IoCode className="text-xl text-green-300" /> {/* Adjust size if needed */}
+          <span className="font-semibold ml-1 text-green-400">Asif Zaman</span>
         </span>
 
         {/* Contact Info */}
@@ -42,10 +43,14 @@ const Footer = () => {
           <FaLinkedin size={20} />
         </a>
 
-        <a className="text-green-400 hover:text-green-500 transition-colors duration-200">
+        <a
+          href="https://wa.me/01824500704"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-green-400 hover:text-green-500 transition-colors duration-200"
+        >
           <div className="flex">
             <FaWhatsapp size={20} />
-            <span className="ml-1">+8801824500704</span>
           </div>
         </a>
       </div>
