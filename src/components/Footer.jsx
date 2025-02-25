@@ -20,13 +20,16 @@ const Footer = () => {
 
         {/* Developer Info */}
         <span className="flex items-center">
-          <IoCode className="text-xl text-green-300" /> {/* Adjust size if needed */}
+          <IoCode className="text-xl text-green-300" />{" "}
+          {/* Adjust size if needed */}
           <span className="font-semibold ml-1 text-green-400">Asif Zaman</span>
         </span>
 
         {/* Contact Info */}
         <a
-          href="mailto:asifzaman3123@gmail.com"
+          href="https://mail.google.com/mail/?view=cm&fs=1&to=asifzaman3123@gmail.com"
+          target="_blank"
+          rel="noopener noreferrer"
           className="flex items-center text-gray-300 hover:text-green-300 transition-colors duration-200"
         >
           <SiGmail className="mr-1" />
