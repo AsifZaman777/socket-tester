@@ -1,5 +1,5 @@
 @echo off
-cd /C:/Users/asif.zaman/OneDrive - LankaBangla/Desktop/socket-tester
+pushd %~dp0
 start "" "http://localhost:3000"
 npm run dev
 pause
