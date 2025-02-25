@@ -27,7 +27,7 @@ const Footer = () => {
 
         {/* Contact Info */}
         <a
-          href="https://mail.google.com/mail/?view=cm&fs=1&to=asifzaman3123@gmail.com"
+          href="https://mail.google.com/mail/?view=cm&fs=1&to=asif.zaman@lbsbd.com"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center text-gray-300 hover:text-green-300 transition-colors duration-200"
@@ -36,26 +36,6 @@ const Footer = () => {
           Contact
         </a>
 
-        {/* Social Media Links */}
-        <a
-          href="https://www.linkedin.com/in/asif-zaman-b9b881212/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-300 hover:text-green-400 transition-colors duration-200"
-        >
-          <FaLinkedin size={20} />
-        </a>
-
-        <a
-          href="https://wa.me/01824500704"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-green-400 hover:text-green-500 transition-colors duration-200"
-        >
-          <div className="flex">
-            <FaWhatsapp size={20} />
-          </div>
-        </a>
       </div>
     </div>
   );
